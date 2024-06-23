@@ -1,5 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
+
+	const spinFactor = tweened(0, {
+		duration: 3000,
+		easing: cubicOut
+	});
+
 	type Player = { name: string; id: number };
 
 	let masterList: Player[] = [
@@ -27,39 +35,39 @@
 	let audio: HTMLAudioElement;
 	onMount(() => {
 		audio = new Audio('/Tick.mp3');
+		audio.playbackRate = 0;
 		audio.loop = true;
+		audio.play();
 		let fadeout = setInterval(function () {
 			if (audio.playbackRate > 0) {
 				audio.playbackRate -= 0.5;
 			}
-		}, 300);
+		}, 800);
 
 		return () => clearInterval(fadeout);
 	});
 
+	$: if ($spinFactor === 1) {
+		if (audio) audio.playbackRate = 0;
+		spinning = false;
+		spinFactor.set(0, {
+			duration: 0
+		});
+	}
+
 	let spinning = false;
 	const handleClick = () => {
 		if (!spinning) {
-			audio.play();
-			audio.playbackRate = 5;
-			masterList = shuffleArray(masterList);
+			spinFactor.set(1);
 			spinning = true;
+			masterList = shuffleArray(masterList);
+			audio.playbackRate = 2;
 		}
-	};
-
-	const handleAnimationIteration = (event: Event) => {
-		audio.pause();
-		spinning = false;
-		event.preventDefault();
 	};
 </script>
 
 <div class="wheel" style="--_items:{masterList.length};">
-	<div
-		class="wheel-section"
-		style={spinning ? '' : 'animation-play-state: paused'}
-		on:animationiteration={handleAnimationIteration}
-	>
+	<div class="wheel-section" style="--_spinFactor: {$spinFactor}">
 		{#each masterList as { name, id }, index}
 			<div class="wheel-section-item" style="--_idx: {index + 1}; --_initailIdx: {id + 1};">
 				{name}
@@ -110,7 +118,7 @@
 			display: grid;
 			inset: 0;
 			transform-origin: center;
-			animation: spin 3s ease-out infinite;
+			transform: rotate(calc(1440deg * var(--_spinFactor)));
 			place-content: center start;
 
 			.wheel-section-item {
@@ -129,15 +137,6 @@
 				font-weight: bold;
 				text-transform: uppercase;
 			}
-		}
-	}
-
-	@keyframes spin {
-		0% {
-			transform: rotate(0deg);
-		}
-		100% {
-			transform: rotate(1080deg);
 		}
 	}
 </style>
