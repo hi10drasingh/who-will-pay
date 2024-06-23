@@ -37,7 +37,6 @@
 		audio = new Audio('/Tick.mp3');
 		audio.playbackRate = 0;
 		audio.loop = true;
-		audio.play();
 		let fadeout = setInterval(function () {
 			if (audio.playbackRate > 0) {
 				audio.playbackRate -= 0.5;
@@ -58,6 +57,7 @@
 	let spinning = false;
 	const handleClick = () => {
 		if (!spinning) {
+			audio.play();
 			spinFactor.set(1);
 			spinning = true;
 			masterList = shuffleArray(masterList);
