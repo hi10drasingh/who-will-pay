@@ -8,6 +8,10 @@
 		easing: cubicOut
 	});
 
+	const MAX_SPIN_DEGREE = 360 * 4;
+
+	let totalSpinDegree = MAX_SPIN_DEGREE;
+
 	type Player = { name: string; id: number };
 
 	let masterList: Player[] = [
@@ -57,6 +61,7 @@
 	let spinning = false;
 	const handleClick = () => {
 		if (!spinning) {
+			totalSpinDegree = 360 + Math.floor(Math.random() * (MAX_SPIN_DEGREE + 1));
 			audio.play();
 			spinFactor.set(1);
 			spinning = true;
@@ -64,10 +69,13 @@
 			audio.playbackRate = 2;
 		}
 	};
+
+	$: currentSpin =
+		$spinFactor === 0 ? `${totalSpinDegree}deg` : `${totalSpinDegree * $spinFactor}deg`;
 </script>
 
 <div class="wheel" style="--_items:{masterList.length};">
-	<div class="wheel-section" style="--_spinFactor: {$spinFactor}">
+	<div class="wheel-section" style="--_currentSpin: {currentSpin}">
 		{#each masterList as { name, id }, index}
 			<div class="wheel-section-item" style="--_idx: {index + 1}; --_initailIdx: {id + 1};">
 				{name}
@@ -118,7 +126,7 @@
 			display: grid;
 			inset: 0;
 			transform-origin: center;
-			transform: rotate(calc(1440deg * var(--_spinFactor)));
+			transform: rotate(var(--_currentSpin));
 			place-content: center start;
 
 			.wheel-section-item {
