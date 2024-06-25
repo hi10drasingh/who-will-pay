@@ -47,6 +47,8 @@
 			}
 		}, 800);
 
+		masterList = shuffleArray(masterList);
+
 		return () => clearInterval(fadeout);
 	});
 
@@ -61,12 +63,13 @@
 	let spinning = false;
 	const handleClick = () => {
 		if (!spinning) {
-			totalSpinDegree = 360 + Math.floor(Math.random() * (MAX_SPIN_DEGREE + 1));
 			audio.play();
-			spinFactor.set(1);
-			spinning = true;
-			masterList = shuffleArray(masterList);
 			audio.playbackRate = 2;
+
+			spinning = true;
+			spinFactor.set(1);
+			masterList = shuffleArray(masterList);
+			totalSpinDegree = 360 + Math.floor(Math.random() * (MAX_SPIN_DEGREE + 1));
 		}
 	};
 
