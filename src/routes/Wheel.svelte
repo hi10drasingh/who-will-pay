@@ -21,7 +21,7 @@
 		{ name: 'chinay sir', id: 4 },
 		{ name: 'chatidar', id: 5 },
 		{ name: 'chultamus', id: 6 },
-		{ name: 'ady', id: 7 }
+		{ name: 'wildcard', id: 7 }
 	];
 
 	const shuffleArray = (arr: Player[]): Player[] => {
